@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import Footer from "./components/layout/Footer";
-import Goals from "./pages/Goals";
-import TargetWeight from "./pages/TargetWeight";
+import Goals from "./components/pages/Goals";
+import TargetWeight from "./components/pages/TargetWeight";
 
 function App() {
   return (
