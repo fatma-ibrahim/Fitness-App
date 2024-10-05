@@ -1,19 +1,34 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import dayjs from "dayjs";
 
 const TargetWeight = () => {
+  const location = useLocation(); // <-- Get passed state (goal and index)
+  const navigate = useNavigate();
+
   const [selectedOption, setSelectedOption] = useState("target-weight");
   const [currentWeight, setCurrentWeight] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
-  const [weightDuration, setWeightDuration] = useState(""); // لحفظ قيمة Weight/Duration
+  const [weightDuration, setWeightDuration] = useState("");
   const [startDate, setStartDate] = useState("");
   const [duration, setDuration] = useState("");
   const [endDate, setEndDate] = useState("");
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state) {
+      const { goal } = location.state;
+      setCurrentWeight(goal.currentWeight || "");
+      setTargetWeight(goal.targetWeight || "");
+      setWeightDuration(goal.weightDuration || "");
+      setStartDate(goal.startDate || "");
+      setDuration(goal.duration || "");
+      setEndDate(goal.endDate || "");
+      setSelectedOption(goal.option || "target-weight");
+    }
+  }, [location.state]);
 
   const handleStartDateChange = (e) => {
     const date = e.target.value;
@@ -23,9 +38,9 @@ const TargetWeight = () => {
     const end = new Date(date);
     if (duration) {
       if (selectedOption === "target-weight") {
-        end.setMonth(end.getMonth() + parseInt(duration)); // Add months
+        end.setMonth(end.getMonth() + parseInt(duration)); 
       } else if (selectedOption === "weight-duration") {
-        end.setDate(end.getDate() + parseInt(duration) * 7); // Add weeks
+        end.setDate(end.getDate() + parseInt(duration) * 7);
       }
       setEndDate(end.toISOString().split("T")[0]); // Format to YYYY-MM-DD
     }
@@ -59,16 +74,22 @@ const TargetWeight = () => {
     const newGoal = {
       currentWeight: parseFloat(currentWeight),
       targetWeight: parseFloat(targetWeight),
-      weightDuration: parseFloat(weightDuration), // تأكد من تخزين weightDuration بشكل صحيح
+      weightDuration: parseFloat(weightDuration),    
       option: selectedOption,
       startDate,
       endDate,
       duration,
     };
 
+    // const updatedGoals = [...existingGoals, newGoal];
+    if (location.state && location.state.index !== undefined) {
+      existingGoals[location.state.index] = newGoal;
+    } else {
+      existingGoals.push(newGoal);
+    }
+
     // Update localStorage with the new goal
-    const updatedGoals = [...existingGoals, newGoal];
-    localStorage.setItem("goals", JSON.stringify(updatedGoals));
+    localStorage.setItem("goals", JSON.stringify(existingGoals));
 
     // Navigate to Goals page after saving
     navigate("/goals");

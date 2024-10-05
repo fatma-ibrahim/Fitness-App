@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom"; 
 import { Button } from "../ui/button";
 
 export default function Goals() {
@@ -7,6 +7,7 @@ export default function Goals() {
   const [goals, setGoals] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState(null);
+  const navigate = useNavigate(); //
 
   useEffect(() => {
     // Retrieve goals from localStorage
@@ -24,14 +25,16 @@ export default function Goals() {
     { name: "Workouts", to: "/workouts" },
   ];
 
-  const handleDelete = () => {
-    // Create a new goals array without the deleted goal
-    const updatedGoals = goals.filter((_, i) => i !== goalToDelete);
-    setGoals(updatedGoals);
-    // Update localStorage
-    localStorage.setItem("goals", JSON.stringify(updatedGoals));
-    setShowModal(false); // Close the modal
-  };
+    const handleDelete = () => {
+      const updatedGoals = goals.filter((_, i) => i !== goalToDelete);
+      setGoals(updatedGoals);
+      localStorage.setItem("goals", JSON.stringify(updatedGoals));
+      setShowModal(false);
+    };
+
+    const handleEdit = (goal, index) => {
+      navigate("/target-weight", { state: { goal, index } }); // <-- Passing goal data and index
+    };
 
   return (
     <>
@@ -103,7 +106,10 @@ export default function Goals() {
 
                 {/* Buttons placed next to each other */}
                 <div className="flex space-x-4 mt-4">
-                  <Button className="bg-yellow-300 px-4 py-2 rounded-md">
+                  <Button
+                    className="bg-yellow-300 px-4 py-2 rounded-md"
+                    onClick={() => handleEdit(goal, index)}
+                  >
                     Edit
                   </Button>
                   <Button
