@@ -9,6 +9,7 @@ const TargetWeight = () => {
   const [selectedOption, setSelectedOption] = useState("target-weight");
   const [currentWeight, setCurrentWeight] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
+  const [weightDuration, setWeightDuration] = useState(""); // لحفظ قيمة Weight/Duration
   const [startDate, setStartDate] = useState("");
   const [duration, setDuration] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -58,6 +59,7 @@ const TargetWeight = () => {
     const newGoal = {
       currentWeight: parseFloat(currentWeight),
       targetWeight: parseFloat(targetWeight),
+      weightDuration: parseFloat(weightDuration), // تأكد من تخزين weightDuration بشكل صحيح
       option: selectedOption,
       startDate,
       endDate,
@@ -180,6 +182,8 @@ const TargetWeight = () => {
                   type="number"
                   min="0"
                   name="weightDuration"
+                  value={weightDuration} // حفظ قيمة Weight Duration
+                  onChange={(e) => setWeightDuration(e.target.value)}
                   className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                   disabled={selectedOption !== "weight-duration"}
                 />
