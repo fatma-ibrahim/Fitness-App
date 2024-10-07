@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Sidebar from "./components/layout/Sidebar";
 import Footer from "./components/layout/Footer";
-import Goals from "./components/pages/Goals";
 import TargetWeight from "./components/pages/TargetWeight";
+import GoalsPage from "./components/pages/GoalsPage";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
             <Sidebar />
             <main className="context flex-grow p-8">
               <Routes>
-                <Route path="/goals" element={<Goals />} />
+                <Route path="/goals" element={<GoalsPage />} />
                 <Route path="/target-weight" element={<TargetWeight />} />
               </Routes>
             </main>

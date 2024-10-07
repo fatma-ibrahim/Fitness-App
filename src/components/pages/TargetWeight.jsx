@@ -4,9 +4,10 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import dayjs from "dayjs";
+import { GoalsData } from "../../../fakeData";
 
 const TargetWeight = () => {
-  const location = useLocation(); // <-- Get passed state (goal and index)
+  const location = useLocation(); 
   const navigate = useNavigate();
 
   const [selectedOption, setSelectedOption] = useState("target-weight");
@@ -16,6 +17,7 @@ const TargetWeight = () => {
   const [startDate, setStartDate] = useState("");
   const [duration, setDuration] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [goals, setGoals] = useState(GoalsData);
 
   useEffect(() => {
     if (location.state) {
@@ -38,7 +40,7 @@ const TargetWeight = () => {
     const end = new Date(date);
     if (duration) {
       if (selectedOption === "target-weight") {
-        end.setMonth(end.getMonth() + parseInt(duration)); 
+        end.setMonth(end.getMonth() + parseInt(duration));
       } else if (selectedOption === "weight-duration") {
         end.setDate(end.getDate() + parseInt(duration) * 7);
       }
@@ -64,32 +66,32 @@ const TargetWeight = () => {
   const handleSave = (e) => {
     e.preventDefault();
 
+    if (
+      !currentWeight ||
+      !startDate ||
+      !duration ||
+      (selectedOption === "target-weight" && !targetWeight) ||
+      (selectedOption === "weight-duration" && !weightDuration)
+    ) {
+      alert("Please fill in all required fields before saving.");
+      return;
+    }
+
     // Calculate the end date before saving
     calculateEndDate();
-
-    // Retrieve existing goals from localStorage
-    const existingGoals = JSON.parse(localStorage.getItem("goals")) || [];
 
     // Add the new goal
     const newGoal = {
       currentWeight: parseFloat(currentWeight),
       targetWeight: parseFloat(targetWeight),
-      weightDuration: parseFloat(weightDuration),    
+      weightDuration: parseFloat(weightDuration),
       option: selectedOption,
       startDate,
       endDate,
       duration,
     };
 
-    // const updatedGoals = [...existingGoals, newGoal];
-    if (location.state && location.state.index !== undefined) {
-      existingGoals[location.state.index] = newGoal;
-    } else {
-      existingGoals.push(newGoal);
-    }
-
-    // Update localStorage with the new goal
-    localStorage.setItem("goals", JSON.stringify(existingGoals));
+    setGoals([...goals, newGoal]);
 
     // Navigate to Goals page after saving
     navigate("/goals");
@@ -97,26 +99,24 @@ const TargetWeight = () => {
 
   return (
     <>
-      <div className="mt-5">
-        <h1 className="font-bold">Lose or Gain Weight</h1>
+      <div className="mt-5 dark:text-white">
+        <h1 className="font-bold dark:text-white">Lose or Gain Weight</h1>
 
         <div className="mb-4">
-          <Label className="block text-sm font-medium text-gray-700">
-            Current Weight:
-          </Label>
+          <Label className="block text-sm font-medium">Current Weight:</Label>
           <Input
             type="number"
             name="currentWeight"
             value={currentWeight}
             onChange={(e) => setCurrentWeight(e.target.value)}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            className="mt-1 w-full rounded-md border border-gray-300 p-2"
           />
         </div>
 
-        <div className="flex space-x-4 mb-4">
+        <div className="mb-4 flex space-x-4 dark:text-gray-300">
           {/* Target Weight Option */}
           <div
-            className={`p-4 rounded-lg shadow-lg w-1/2 ${
+            className={`w-1/2 rounded-lg p-4 shadow-lg ${
               selectedOption === "target-weight" ? "bg-gray-100" : "bg-gray-200"
             }`}
           >
@@ -128,18 +128,18 @@ const TargetWeight = () => {
                 value="target-weight"
                 checked={selectedOption === "target-weight"}
                 onChange={() => setSelectedOption("target-weight")}
-                className="mr-2 w-4 h-4"
+                className="mr-2 h-4 w-4"
               />
               <Label
                 htmlFor="target-weight"
-                className="text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700 dark:text-gray-900"
               >
                 Target Weight in duration
               </Label>
             </div>
             <div className="mt-2">
               <div className="mb-2">
-                <Label className="block text-sm font-medium text-gray-700">
+                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-900">
                   Target Weight:
                 </Label>
                 <Input
@@ -148,12 +148,12 @@ const TargetWeight = () => {
                   name="targetWeight"
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(e.target.value)}
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
                   disabled={selectedOption !== "target-weight"}
                 />
               </div>
               <div>
-                <Label className="block text-sm font-medium text-gray-700">
+                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-900">
                   Duration (month):
                 </Label>
                 <Input
@@ -162,7 +162,7 @@ const TargetWeight = () => {
                   name="duration"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
                   disabled={selectedOption !== "target-weight"}
                 />
               </div>
@@ -171,11 +171,11 @@ const TargetWeight = () => {
 
           {/* Weight Duration Option */}
           <div
-            className={`p-4 rounded-lg shadow-lg w-1/2 ${
+            className={`w-1/2 rounded-lg p-4 shadow-lg ${
               selectedOption === "weight-duration"
                 ? "bg-gray-100"
                 : "bg-gray-200"
-            }`}
+            } `}
           >
             <div className="flex items-center">
               <Input
@@ -185,32 +185,32 @@ const TargetWeight = () => {
                 value="weight-duration"
                 checked={selectedOption === "weight-duration"}
                 onChange={() => setSelectedOption("weight-duration")}
-                className="mr-2 w-4 h-4"
+                className="mr-2 h-4 w-4"
               />
               <Label
                 htmlFor="weight-duration"
-                className="text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700 dark:text-gray-900"
               >
                 Weight to be lost or gained in the duration
               </Label>
             </div>
             <div className="mt-2">
               <div className="mb-2">
-                <Label className="block text-sm font-medium text-gray-700">
+                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-900">
                   Weight/Duration:
                 </Label>
                 <Input
                   type="number"
                   min="0"
                   name="weightDuration"
-                  value={weightDuration} // حفظ قيمة Weight Duration
+                  value={weightDuration}
                   onChange={(e) => setWeightDuration(e.target.value)}
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
                   disabled={selectedOption !== "weight-duration"}
                 />
               </div>
               <div>
-                <Label className="block text-sm font-medium text-gray-700">
+                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-900">
                   Duration (week):
                 </Label>
                 <Input
@@ -219,7 +219,7 @@ const TargetWeight = () => {
                   name="duration"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
                   disabled={selectedOption !== "weight-duration"}
                 />
               </div>
@@ -228,7 +228,7 @@ const TargetWeight = () => {
         </div>
 
         {/* Start Date and End Date in the same row */}
-        <div className="flex space-x-4 mb-4">
+        <div className="mb-4 flex space-x-4">
           <div className="mb-4 w-1/2">
             <Label className="block text-sm font-medium text-gray-700">
               Start Date:
@@ -236,7 +236,7 @@ const TargetWeight = () => {
             <Input
               type="date"
               name="startDate"
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              className="mt-1 w-full rounded-md border border-gray-300 p-2 dark:bg-gray-800 dark:text-white"
               value={startDate}
               onChange={handleStartDateChange}
             />
@@ -249,7 +249,7 @@ const TargetWeight = () => {
             <Input
               type="date"
               name="endDate"
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              className="mt-1 w-full rounded-md border border-gray-300 p-2 dark:bg-gray-800 dark:text-white"
               value={endDate}
               readOnly
             />
@@ -258,10 +258,18 @@ const TargetWeight = () => {
 
         <Button
           type="submit"
-          className="bg-green-500 text-white py-2 px-4 rounded-md"
+          className="mr-2 rounded-md bg-green-500 px-4 py-2 text-white"
           onClick={handleSave}
         >
           Save
+        </Button>
+
+        <Button
+          type="button"
+          className="rounded-md bg-gray-500 px-4 py-2 text-white"
+          onClick={() => navigate("/goals")}
+        >
+          Cancel
         </Button>
       </div>
     </>
