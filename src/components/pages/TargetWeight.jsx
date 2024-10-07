@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { GoalsData } from "../../../fakeData";
 
 const TargetWeight = () => {
-  const location = useLocation();
+  const location = useLocation(); 
   const navigate = useNavigate();
 
   const [selectedOption, setSelectedOption] = useState("target-weight");
